@@ -1,18 +1,18 @@
-### How DNS Works In AWS
+## How DNS Works In AWS
 
-DNS (Domain Name System) is a hierarchical, distributed system that resolves human-readable domain names into IP addresses. 
+DNS is a hierarchical, distributed system that resolves human-readable domain names into IP addresses. 
 AWS Route 53 is a DNS service that provides domain registration, DNS resolution, and health checking.
 
 When a DNS query is made:
 
 - The request is checked in the local DNS resolver. 
 - If not found, the resolver queries the root nameservers.
-- The root directs the request to the TLD (Top-Level Domain) nameservers (e.g., `.com`, `.org`, `.io`).
+- The root nameservers directs the request to the TLD (Top-Level Domain) nameservers (e.g., `.com`, `.org`, `.io`).
 - The TLD nameserver directs it to the authoritative nameserver, which contains the hosted zone and its DNS records.
-- The authoritative nameserver (Route 53) responds with the requested IP address or relevant DNS record.
+- The authoritative nameserver responds with the requested IP address or relevant DNS record.
 
 
-### Hosted Zones: Public vs. Private
+## Hosted Zones: Public vs. Private
 
 A hosted zone is a container for DNS records for a specific domain, managed within Route 53.
 
@@ -20,7 +20,7 @@ A hosted zone is a container for DNS records for a specific domain, managed with
 - Private Hosted Zone: Used for domains within a private VPC. These records resolve only within the associated VPCs and are not accessible over the internet.
 
 
-### Nameservers
+## Nameservers
 
 Nameservers are responsible for responding to DNS queries for a domain. 
 Each hosted zone in Route 53 is assigned a set of four authoritative nameservers.
@@ -29,7 +29,7 @@ Each hosted zone in Route 53 is assigned a set of four authoritative nameservers
 - When a query is made, the request eventually reaches these nameservers, which resolve it using the records in the hosted zone.
 
 
-### DNS Record Types
+## DNS Record Types
 
 - A Record (Address Record): Maps a domain name to an IPv4 address.
 - AAAA Record: Maps a domain name to an IPv6 address.
@@ -38,7 +38,7 @@ Each hosted zone in Route 53 is assigned a set of four authoritative nameservers
 - MX (Mail Exchange) Record: Specifies the mail servers responsible for receiving emails for a domain.
 
 
-### Health Checks
+## Health Checks
 
 Route 53 health checks continuously monitor the health of endpoints and integrated AWS services to determine their availability. 
 A health check operates by sending requests to a specified endpoint at configured intervals and evaluating the response against a set of conditions.
@@ -56,7 +56,7 @@ Health check observations come from multiple AWS regions to avoid false positive
 The failure threshold determines how many consecutive failures trigger an unhealthy state. 
 
 
-### Routing Policies
+## Routing Policies
 
 - Simple Routing resolves DNS queries to a single record. 
 If multiple records exist for the same domain, all are returned, and the client selects one at random. 
@@ -90,7 +90,7 @@ Traffic flow can be influenced using a bias value, which expands or shrinks the 
 When a user makes a request, Route 53 checks the user’s location and matches it with the closest configured record.
 
 
-### DNSSEC 
+## DNSSEC 
 
 1. **Key Generation**  
 AWS Route 53 generates **Key Signing Keys (KSKs)** and **Zone Signing Keys (ZSKs)** for DNSSEC-enabled hosted zones. The **ZSK's private key** signs all DNS records in the hosted zone, producing RRSIG records. The **KSK's private key** signs only the **DNSKEY record**, which contains the public ZSK and public KSK. The **public KSK** is included in the **Delegation Signer (DS) record**, which is registered at the domain registrar to create a trust link to the parent zone.
