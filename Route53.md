@@ -92,20 +92,33 @@ When a user makes a request, Route 53 checks the user’s location and matches i
 
 ## DNSSEC 
 
-1. **Key Generation**  
-AWS Route 53 generates **Key Signing Keys (KSKs)** and **Zone Signing Keys (ZSKs)** for DNSSEC-enabled hosted zones. The **ZSK's private key** signs all DNS records in the hosted zone, producing RRSIG records. The **KSK's private key** signs only the **DNSKEY record**, which contains the public ZSK and public KSK. The **public KSK** is included in the **Delegation Signer (DS) record**, which is registered at the domain registrar to create a trust link to the parent zone.
+1. Key Generation  - AWS Route 53 generates Key Signing Keys (KSKs) and Zone Signing Keys (ZSKs) for DNSSEC-enabled hosted zones. 
+The ZSK's private key signs all DNS records in the hosted zone, producing RRSIG records. 
+The KSK's private key signs only the DNSKEY record, which contains the public ZSK and public KSK. The public KSK is included in the Delegation Signer (DS) record, which is registered at the domain registrar to create a trust link to the parent zone.
 
 
-2. **DNS Response with RRSIG**  
-When a resolver queries a DNSSEC-enabled domain, Route 53 returns:
+2. DNS Response with RRSIG - When a resolver queries a DNSSEC-enabled domain, Route 53 returns:
    - The requested DNS record (e.g., A, CNAME, MX).
-   - An **RRSIG record**, which is a cryptographic signature proving the authenticity of the DNS record.
-   - A **DNSKEY record**, which contains the public **ZSK** and **KSK** necessary for signature verification.
+   - An RRSIG record, which is a cryptographic signature proving the authenticity of the DNS record.
+   - A DNSKEY record, which contains the public ZSK and KSK necessary for signature verification.
 
 
-3. **Signature Verification Process**  
-The resolver follows a chain of trust to verify authenticity:
-   - It retrieves the **DS record** from the parent zone, which contains a hash of the domain's **public KSK**.
-   - It then uses this **public KSK** to validate the **DNSKEY record** returned by the authoritative DNS server.
-   - If the **DNSKEY record** is valid, the resolver extracts the **public ZSK** and uses it to verify the **RRSIG signature** for the requested DNS record (A, CNAME, etc.).
+3. Signature Verification Process - The resolver follows a chain of trust to verify authenticity:
+   - It retrieves the DS record from the parent zone, which contains a hash of the domain's public KSK.
+   - It then uses this public KSK to validate the DNSKEY record returned by the authoritative DNS server.
+   - If the DNSKEY record is valid, the resolver extracts the public ZSK and uses it to verify the RRSIG signature for the requested DNS record (A, CNAME, etc.).
    - If all signatures match and the cryptographic chain is intact, the response is trusted. Otherwise, the response is rejected.
+
+
+## Route53 Endpoints
+
+Route 53 Resolver Endpoints provide DNS resolution between your VPC and your on-premises networks by enabling a seamless, hybrid DNS environment. 
+They operate by forwarding DNS queries across network boundaries, specifically between AWS VPCs and external (on-premises) DNS infrastructures.
+
+Inbound Resolver Endpoints allow DNS queries originating from your on-premises network to reach AWS Route 53 Resolver. 
+When your local infrastructure sends a DNS request for AWS-hosted resources, the inbound endpoint accepts the request, resolves it using Route 53 private hosted zones or public DNS, and returns the result.
+
+Outbound Resolver Endpoints send DNS queries originating from your AWS VPC to your on-premises DNS servers. 
+When an EC2 instance or service inside your VPC queries a domain managed by your on-premises DNS, the Route 53 Resolver forwards the query through the outbound endpoint to your external DNS servers for resolution.
+
+Route 53 Resolver Endpoints solve the critical challenge of hybrid DNS resolution, enabling consistent DNS lookups across AWS and on-premises resources.
